@@ -1,0 +1,501 @@
+
+-Goal-
+Given a text document that is potentially relevant to this activity and a list of entity types, identify all entities of those types from the text and all relationships among the identified entities.
+
+-Steps-
+1. Identify all entities. For each identified entity, extract the following information:
+- entity_name: Name of the entity, capitalized
+- entity_type: One of the following types: [customer, company, location, product, manufacturer, product category, feature, review, rating, price, date]
+- entity_description: Comprehensive description of the entity's attributes and activities
+Format each entity as ("entity"{tuple_delimiter}<entity_name>{tuple_delimiter}<entity_type>{tuple_delimiter}<entity_description>)
+
+2. From the entities identified in step 1, identify all pairs of (source_entity, target_entity) that are *clearly related* to each other.
+For each pair of related entities, extract the following information:
+- source_entity: name of the source entity, as identified in step 1
+- target_entity: name of the target entity, as identified in step 1
+- relationship_description: explanation as to why you think the source entity and the target entity are related to each other
+- relationship_strength: an integer score between 1 to 10, indicating strength of the relationship between the source entity and target entity
+Format each relationship as ("relationship"{tuple_delimiter}<source_entity>{tuple_delimiter}<target_entity>{tuple_delimiter}<relationship_description>{tuple_delimiter}<relationship_strength>)
+
+3. Return output in Chinese as a single list of all the entities and relationships identified in steps 1 and 2. Use **{record_delimiter}** as the list delimiter.
+
+4. If you have to translate into Chinese, just translate the descriptions, nothing else!
+
+5. When finished, output {completion_delimiter}.
+
+-Examples-
+######################
+
+Example 1:
+
+entity_types: [customer, company, location, product, manufacturer, product category, feature, review, rating, price, date]
+text:
+客户ID: HC021
+客户公司: 易动力科技有限公司生物科技
+客户所在地: 芳县, 中国
+产品信息: 飞利浦 智能冰箱 Advanced (类别: 智能冰箱)
+生产商: 飞利浦智能照明
+产品价格: 3246.68
+评分: 5.0星
+评价日期: 2025年04月09日
+评价内容: "说实话，这款飞利浦 智能冰箱 Advanced非常满意。除此之外智能学习功能特别实用。如果非要说缺点的话，信号强度还有提升空间。整体体验不错。"
+
+客户ID: EG614
+客户公司: 联软信息有限公司物联网
+客户所在地: 长春市, 中国
+产品信息: 飞利浦 智能冰箱 Advanced (类别: 智能冰箱)
+生产商: 飞利浦智能照明
+产品价格: 3246.68
+评分: 3.2星
+评价日期: 2024年09月25日
+评价内容: "说实话，这款飞利浦 智能冰箱 Advanced一般般。省电模式设计得比较合理。不仅如此信号强度有点问题。这个价位能买到这样的产品已经很不错了。"
+
+客户ID: OG278
+客户公司: 新格林耐特传媒有限公司科技公司
+客户所在地: 永安县, 中国
+产品信息: 飞利浦 智能冰箱 Advanced (类别: 智能冰箱)
+生产商: 飞利浦智能照明
+产品价格: 3246.68
+评分: 3.5星
+评价日期: 2024年03月12日
+评价内容: "在工作时使用还不错，但在其他情况下表现一般。"
+------------------------
+output:
+("entity"{tuple_delimiter}SK026{tuple_delimiter}customer{tuple_delimiter}客户ID为SK026，曾多次购买西门子 智能灯具 Mini，体验极差，主要抱怨电池寿命和产品故障。}
+{record_delimiter}
+("entity"{tuple_delimiter}巨奥科技有限公司虚拟现实{tuple_delimiter}company{tuple_delimiter}巨奥科技有限公司虚拟现实是一家专注于虚拟现实技术的企业，客户SK026所属公司。}
+{record_delimiter}
+("entity"{tuple_delimiter}海门县, 中国{tuple_delimiter}location{tuple_delimiter}海门县位于中国，是客户SK026的所在地。}
+{record_delimiter}
+("entity"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}product{tuple_delimiter}西门子 智能灯具 Mini是一款智能灯具产品，客户多次购买并评价。}
+{record_delimiter}
+("entity"{tuple_delimiter}智能灯具{tuple_delimiter}product category{tuple_delimiter}智能灯具是西门子 智能灯具 Mini所属的产品类别，具备智能控制等功能。}
+{record_delimiter}
+("entity"{tuple_delimiter}西门子智能家居{tuple_delimiter}manufacturer{tuple_delimiter}西门子智能家居是西门子 智能灯具 Mini的生产商，专注于智能家居产品。}
+{record_delimiter}
+("entity"{tuple_delimiter}5984.03{tuple_delimiter}price{tuple_delimiter}西门子 智能灯具 Mini的价格为5984.03元。}
+{record_delimiter}
+("entity"{tuple_delimiter}1.6星{tuple_delimiter}rating{tuple_delimiter}客户SK026于2025年09月30日对西门子 智能灯具 Mini的评分为1.6星。}
+{record_delimiter}
+("entity"{tuple_delimiter}2025年09月30日{tuple_delimiter}date{tuple_delimiter}客户SK026于2025年09月30日提交了对西门子 智能灯具 Mini的评价。}
+{record_delimiter}
+("entity"{tuple_delimiter}电池寿命{tuple_delimiter}feature{tuple_delimiter}西门子 智能灯具 Mini的电池寿命被客户SK026多次批评为极差。}
+{record_delimiter}
+("entity"{tuple_delimiter}1.8星{tuple_delimiter}rating{tuple_delimiter}客户SK026于2025年03月24日对西门子 智能灯具 Mini的评分为1.8星。}
+{record_delimiter}
+("entity"{tuple_delimiter}2025年03月24日{tuple_delimiter}date{tuple_delimiter}客户SK026于2025年03月24日提交了对西门子 智能灯具 Mini的评价。}
+{record_delimiter}
+("entity"{tuple_delimiter}故障{tuple_delimiter}feature{tuple_delimiter}西门子 智能灯具 Mini在客户SK026使用不到一周就出现故障。}
+{record_delimiter}
+("entity"{tuple_delimiter}OO987{tuple_delimiter}customer{tuple_delimiter}客户ID为OO987，购买西门子 智能灯具 Mini，认为产品一般，安装方便但散热有问题。}
+{record_delimiter}
+("entity"{tuple_delimiter}盟新科技有限公司生物科技{tuple_delimiter}company{tuple_delimiter}盟新科技有限公司生物科技是一家生物科技企业，客户OO987所属公司。}
+{record_delimiter}
+("entity"{tuple_delimiter}莹县, 中国{tuple_delimiter}location{tuple_delimiter}莹县位于中国，是客户OO987的所在地。}
+{record_delimiter}
+("entity"{tuple_delimiter}3.5星{tuple_delimiter}rating{tuple_delimiter}客户OO987于2025年02月25日对西门子 智能灯具 Mini的评分为3.5星。}
+{record_delimiter}
+("entity"{tuple_delimiter}2025年02月25日{tuple_delimiter}date{tuple_delimiter}客户OO987于2025年02月25日提交了对西门子 智能灯具 Mini的评价。}
+{record_delimiter}
+("entity"{tuple_delimiter}安装方便{tuple_delimiter}feature{tuple_delimiter}西门子 智能灯具 Mini安装方便，客户OO987认为是优点。}
+{record_delimiter}
+("entity"{tuple_delimiter}散热问题{tuple_delimiter}feature{tuple_delimiter}西门子 智能灯具 Mini存在散热问题，客户OO987指出该缺点。}
+{record_delimiter}
+("entity"{tuple_delimiter}PI956{tuple_delimiter}customer{tuple_delimiter}客户ID为PI956，购买西门子 智能灯具 Mini，认为智能化程度低，非常不满意。}
+{record_delimiter}
+("entity"{tuple_delimiter}华远软件网络有限公司云计算{tuple_delimiter}company{tuple_delimiter}华远软件网络有限公司云计算是一家云计算企业，客户PI956所属公司。}
+{record_delimiter}
+("entity"{tuple_delimiter}琳市, 中国{tuple_delimiter}location{tuple_delimiter}琳市位于中国，是客户PI956的所在地。}
+{record_delimiter}
+("entity"{tuple_delimiter}2.8星{tuple_delimiter}rating{tuple_delimiter}客户PI956于2024年10月24日对西门子 智能灯具 Mini的评分为2.8星。}
+{record_delimiter}
+("entity"{tuple_delimiter}2024年10月24日{tuple_delimiter}date{tuple_delimiter}客户PI956于2024年10月24日提交了对西门子 智能灯具 Mini的评价。}
+{record_delimiter}
+("entity"{tuple_delimiter}智能化程度{tuple_delimiter}feature{tuple_delimiter}西门子 智能灯具 Mini的智能化程度被客户PI956批评为低。}
+{record_delimiter}
+("entity"{tuple_delimiter}HC021{tuple_delimiter}customer{tuple_delimiter}客户ID为HC021，购买飞利浦 智能灯具 Standard，认为稳定性差，不推荐。}
+{record_delimiter}
+("entity"{tuple_delimiter}易动力科技有限公司生物科技{tuple_delimiter}company{tuple_delimiter}易动力科技有限公司生物科技是一家生物科技企业，客户HC021所属公司。}
+{record_delimiter}
+("entity"{tuple_delimiter}芳县, 中国{tuple_delimiter}location{tuple_delimiter}芳县位于中国，是客户HC021的所在地。}
+{record_delimiter}
+("entity"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}product{tuple_delimiter}飞利浦 智能灯具 Standard是一款智能灯具产品，客户HC021购买并评价。}
+{record_delimiter}
+("entity"{tuple_delimiter}飞利浦智能照明{tuple_delimiter}manufacturer{tuple_delimiter}飞利浦智能照明是飞利浦 智能灯具 Standard的生产商，专注于智能照明产品。}
+{record_delimiter}
+("entity"{tuple_delimiter}2663.62{tuple_delimiter}price{tuple_delimiter}飞利浦 智能灯具 Standard的价格为2663.62元。}
+{record_delimiter}
+("entity"{tuple_delimiter}2.5星{tuple_delimiter}rating{tuple_delimiter}客户HC021于2024年08月03日对飞利浦 智能灯具 Standard的评分为2.5星。}
+{record_delimiter}
+("entity"{tuple_delimiter}2024年08月03日{tuple_delimiter}date{tuple_delimiter}客户HC021于2024年08月03日提交了对飞利浦 智能灯具 Standard的评价。}
+{record_delimiter}
+("entity"{tuple_delimiter}稳定性{tuple_delimiter}feature{tuple_delimiter}飞利浦 智能灯具 Standard的稳定性被客户HC021批评为差。}
+{record_delimiter}
+("entity"{tuple_delimiter}EG614{tuple_delimiter}customer{tuple_delimiter}客户ID为EG614，购买西门子 智能灯具 Mini，认为定时功能好用，夜间使用方便，评分较高。}
+{record_delimiter}
+("entity"{tuple_delimiter}联软信息有限公司物联网{tuple_delimiter}company{tuple_delimiter}联软信息有限公司物联网是一家物联网企业，客户EG614所属公司。}
+{record_delimiter}
+("entity"{tuple_delimiter}长春市, 中国{tuple_delimiter}location{tuple_delimiter}长春市位于中国，是客户EG614的所在地。}
+{record_delimiter}
+("entity"{tuple_delimiter}4.8星{tuple_delimiter}rating{tuple_delimiter}客户EG614于2024年07月11日对西门子 智能灯具 Mini的评分为4.8星。}
+{record_delimiter}
+("entity"{tuple_delimiter}2024年07月11日{tuple_delimiter}date{tuple_delimiter}客户EG614于2024年07月11日提交了对西门子 智能灯具 Mini的评价。}
+{record_delimiter}
+("entity"{tuple_delimiter}定时功能{tuple_delimiter}feature{tuple_delimiter}西门子 智能灯具 Mini的定时功能被客户EG614认为非常好用，夜间使用方便。}
+{record_delimiter}
+("entity"{tuple_delimiter}OG278{tuple_delimiter}customer{tuple_delimiter}客户ID为OG278，购买西门子 智能灯具 Mini，认为信号强度问题严重，性价比低。}
+{record_delimiter}
+("entity"{tuple_delimiter}新格林耐特传媒有限公司科技公司{tuple_delimiter}company{tuple_delimiter}新格林耐特传媒有限公司科技公司是一家科技公司，客户OG278所属公司。}
+{record_delimiter}
+("entity"{tuple_delimiter}永安县, 中国{tuple_delimiter}location{tuple_delimiter}永安县位于中国，是客户OG278的所在地。}
+{record_delimiter}
+("entity"{tuple_delimiter}2.6星{tuple_delimiter}rating{tuple_delimiter}客户OG278于2024年02月13日对西门子 智能灯具 Mini的评分为2.6星。}
+{record_delimiter}
+("entity"{tuple_delimiter}2024年02月13日{tuple_delimiter}date{tuple_delimiter}客户OG278于2024年02月13日提交了对西门子 智能灯具 Mini的评价。}
+{record_delimiter}
+("entity"{tuple_delimiter}信号强度{tuple_delimiter}feature{tuple_delimiter}西门子 智能灯具 Mini的信号强度被客户OG278批评为严重不足。}
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}巨奥科技有限公司虚拟现实{tuple_delimiter}SK026是巨奥科技有限公司虚拟现实的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}海门县, 中国{tuple_delimiter}SK026的所在地为海门县, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}SK026多次购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}智能灯具{tuple_delimiter}西门子 智能灯具 Mini属于智能灯具类别{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}西门子智能家居{tuple_delimiter}西门子智能家居是西门子 智能灯具 Mini的生产商{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}5984.03{tuple_delimiter}西门子 智能灯具 Mini的价格为5984.03元{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}1.6星{tuple_delimiter}SK026对西门子 智能灯具 Mini的评分为1.6星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}2025年09月30日{tuple_delimiter}SK026于2025年09月30日提交了评价{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}电池寿命{tuple_delimiter}SK026批评西门子 智能灯具 Mini的电池寿命{tuple_delimiter}8)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}1.8星{tuple_delimiter}SK026对西门子 智能灯具 Mini的评分为1.8星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}2025年03月24日{tuple_delimiter}SK026于2025年03月24日提交了评价{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}故障{tuple_delimiter}SK026指出西门子 智能灯具 Mini使用不到一周就出现故障{tuple_delimiter}8)
+{record_delimiter}
+("relationship"{tuple_delimiter}OO987{tuple_delimiter}盟新科技有限公司生物科技{tuple_delimiter}OO987是盟新科技有限公司生物科技的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OO987{tuple_delimiter}莹县, 中国{tuple_delimiter}OO987的所在地为莹县, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OO987{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}OO987购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OO987{tuple_delimiter}3.5星{tuple_delimiter}OO987对西门子 智能灯具 Mini的评分为3.5星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OO987{tuple_delimiter}2025年02月25日{tuple_delimiter}OO987于2025年02月25日提交了评价{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}安装方便{tuple_delimiter}OO987认为西门子 智能灯具 Mini安装方便{tuple_delimiter}7)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}散热问题{tuple_delimiter}OO987指出西门子 智能灯具 Mini存在散热问题{tuple_delimiter}7)
+{record_delimiter}
+("relationship"{tuple_delimiter}PI956{tuple_delimiter}华远软件网络有限公司云计算{tuple_delimiter}PI956是华远软件网络有限公司云计算的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}PI956{tuple_delimiter}琳市, 中国{tuple_delimiter}PI956的所在地为琳市, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}PI956{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}PI956购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}PI956{tuple_delimiter}2.8星{tuple_delimiter}PI956对西门子 智能灯具 Mini的评分为2.8星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}PI956{tuple_delimiter}2024年10月24日{tuple_delimiter}PI956于2024年10月24日提交了评价{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}智能化程度{tuple_delimiter}PI956批评西门子 智能灯具 Mini智能化程度低{tuple_delimiter}7)
+{record_delimiter}
+("relationship"{tuple_delimiter}HC021{tuple_delimiter}易动力科技有限公司生物科技{tuple_delimiter}HC021是易动力科技有限公司生物科技的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}HC021{tuple_delimiter}芳县, 中国{tuple_delimiter}HC021的所在地为芳县, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}HC021{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}HC021购买并评价飞利浦 智能灯具 Standard{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}智能灯具{tuple_delimiter}飞利浦 智能灯具 Standard属于智能灯具类别{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}飞利浦智能照明{tuple_delimiter}飞利浦智能照明是飞利浦 智能灯具 Standard的生产商{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}2663.62{tuple_delimiter}飞利浦 智能灯具 Standard的价格为2663.62元{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}HC021{tuple_delimiter}2.5星{tuple_delimiter}HC021对飞利浦 智能灯具 Standard的评分为2.5星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}HC021{tuple_delimiter}2024年08月03日{tuple_delimiter}HC021于2024年08月03日提交了评价{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}稳定性{tuple_delimiter}HC021批评飞利浦 智能灯具 Standard稳定性差{tuple_delimiter}7)
+{record_delimiter}
+("relationship"{tuple_delimiter}EG614{tuple_delimiter}联软信息有限公司物联网{tuple_delimiter}EG614是联软信息有限公司物联网的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}EG614{tuple_delimiter}长春市, 中国{tuple_delimiter}EG614的所在地为长春市, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}EG614{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}EG614购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}EG614{tuple_delimiter}4.8星{tuple_delimiter}EG614对西门子 智能灯具 Mini的评分为4.8星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}EG614{tuple_delimiter}2024年07月11日{tuple_delimiter}EG614于2024年07月11日提交了评价{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}定时功能{tuple_delimiter}EG614认为西门子 智能灯具 Mini定时功能好用，夜间使用方便{tuple_delimiter}8)
+{record_delimiter}
+("relationship"{tuple_delimiter}OG278{tuple_delimiter}新格林耐特传媒有限公司科技公司{tuple_delimiter}OG278是新格林耐特传媒有限公司科技公司的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OG278{tuple_delimiter}永安县, 中国{tuple_delimiter}OG278的所在地为永安县, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OG278{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}OG278购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OG278{tuple_delimiter}2.6星{tuple_delimiter}OG278对西门子 智能灯具 Mini的评分为2.6星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OG278{tuple_delimiter}2024年02月13日{tuple_delimiter}OG278于2024年02月13日提交了评价{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}信号强度{tuple_delimiter}OG278批评西门子 智能灯具 Mini信号强度问题严重{tuple_delimiter}7)
+{completion_delimiter}
+#############################
+
+
+Example 2:
+
+entity_types: [customer, company, location, product, manufacturer, product category, feature, review, rating, price, date]
+text:
+客户ID: EG614
+客户公司: 联软信息有限公司物联网
+客户所在地: 长春市, 中国
+产品信息: 苹果 智能电饭煲 Lite (类别: 智能电饭煲)
+生产商: 苹果智能家庭
+产品价格: 6656.65
+评分: 4.6星
+评价日期: 2025年09月14日
+评价内容: "这款智能电饭煲质量很好，性价比高。总体来说很满意。"
+
+客户ID: CE922
+客户公司: 彩虹科技有限公司网络安全
+客户所在地: 潜江县, 中国
+产品信息: 美的 智能电饭煲 Ultra (类别: 智能电饭煲)
+生产商: 美的智能科技
+产品价格: 8742.85
+评分: 3.3星
+评价日期: 2025年09月06日
+评价内容: "这款产品优缺点都有，功能齐全，但音质一般。"
+
+客户ID: EG614
+客户公司: 联软信息有限公司物联网
+客户所在地: 长春市, 中国
+产品信息: 苹果 智能电饭煲 Lite (类别: 智能电饭煲)
+生产商: 苹果智能家庭
+产品价格: 6656.65
+评分: 3.7星
+评价日期: 2025年08月26日
+评价内容: "在多次对比之后选择了这款，这款苹果 智能电饭煲 Lite基本符合预期。智能联动设计得比较合理。另外缺点是兼容性差。可以考虑其他品牌的同类产品。"
+
+客户ID: HS453
+客户公司: 和泰科技有限公司区块链技术
+客户所在地: 林市, 中国
+产品信息: 美的 智能电饭煲 Ultra (类别: 智能电饭煲)
+生产商: 美的智能科技
+产品价格: 8742.85
+评分: 4.9星
+评价日期: 2025年07月02日
+评价内容: "用了一段时间，这款智能电饭煲非常满意。和广告宣传的一样好。如果非要说缺点的话，电池寿命还有提升空间。对得起这个价格。"
+
+客户ID: SK026
+客户公司: 巨奥科技有限公司虚拟现实
+客户所在地: 海门县, 中国
+产品信息: 苹果 智能电饭煲 Lite (类别: 智能电饭煲)
+生产商: 苹果智能家庭
+产品价格: 6656.65
+评分: 4.5星
+评价日期: 2025年06月11日
+评价内容: "智能电饭煲的设计很人性化，做工精细，值得推荐。"
+
+客户ID: MU399
+客户公司: 天开信息有限公司生物科技
+客户所在地: 阜新县, 中国
+产品信息: 美的 智能电饭煲 Ultra (类别: 智能电饭煲)
+生产商: 美的智能科技
+产品价格: 8742.85
+评分: 1.5星
+评价日期: 2025年03月11日
+评价内容: "连接稳定性问题很严重，完全不值这个价格。"
+
+客户ID: HS453
+客户公司: 和泰科技有限公司区块链技术
+客户所在地: 林市, 中国
+产品信息: 美的 智能电饭煲 Ultra (类别: 智能电饭煲)
+生产商: 美的智能科技
+产品价格: 8742.85
+评分: 4.2星
+评价日期: 2025年01月19日
+评价内容: "非常满意这次购买，性价比高，送货也很快。"
+------------------------
+output:
+("entity"{tuple_delimiter}SK026{tuple_delimiter}customer{tuple_delimiter}客户ID为SK026的用户，隶属于巨奥科技有限公司虚拟现实，位于海门县, 中国，曾多次购买并评价西门子 智能灯具 Mini。)
+{record_delimiter}
+("entity"{tuple_delimiter}巨奥科技有限公司虚拟现实{tuple_delimiter}company{tuple_delimiter}巨奥科技有限公司虚拟现实是一家专注于虚拟现实领域的科技公司，客户SK026所属企业。)
+{record_delimiter}
+("entity"{tuple_delimiter}海门县, 中国{tuple_delimiter}location{tuple_delimiter}海门县位于中国，是客户SK026的所在地。)
+{record_delimiter}
+("entity"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}product{tuple_delimiter}西门子 智能灯具 Mini是一款智能灯具产品，价格为5984.03元，获得多位客户评价。)
+{record_delimiter}
+("entity"{tuple_delimiter}西门子智能家居{tuple_delimiter}manufacturer{tuple_delimiter}西门子智能家居是西门子 智能灯具 Mini的生产商，专注于智能家居产品。)
+{record_delimiter}
+("entity"{tuple_delimiter}智能灯具{tuple_delimiter}product category{tuple_delimiter}智能灯具是一类具备智能控制和自动化功能的照明产品。)
+{record_delimiter}
+("entity"{tuple_delimiter}电池寿命{tuple_delimiter}feature{tuple_delimiter}电池寿命是西门子 智能灯具 Mini被多次提及的产品特性，部分用户反馈表现不佳。)
+{record_delimiter}
+("entity"{tuple_delimiter}故障{tuple_delimiter}feature{tuple_delimiter}故障是用户对西门子 智能灯具 Mini提出的负面反馈，部分用户在短时间内遇到产品故障。)
+{record_delimiter}
+("entity"{tuple_delimiter}定时功能{tuple_delimiter}feature{tuple_delimiter}定时功能是西门子 智能灯具 Mini的一个亮点功能，受到部分用户好评。)
+{record_delimiter}
+("entity"{tuple_delimiter}散热问题{tuple_delimiter}feature{tuple_delimiter}散热问题是部分用户对西门子 智能灯具 Mini提出的负面反馈。)
+{record_delimiter}
+("entity"{tuple_delimiter}信号强度{tuple_delimiter}feature{tuple_delimiter}信号强度是用户对西门子 智能灯具 Mini提出的产品特性，部分用户反馈信号强度较差。)
+{record_delimiter}
+("entity"{tuple_delimiter}EG614{tuple_delimiter}customer{tuple_delimiter}客户ID为EG614的用户，隶属于联软信息有限公司物联网，位于长春市, 中国，购买并评价西门子 智能灯具 Mini。)
+{record_delimiter}
+("entity"{tuple_delimiter}联软信息有限公司物联网{tuple_delimiter}company{tuple_delimiter}联软信息有限公司物联网是一家专注于物联网领域的公司，客户EG614所属企业。)
+{record_delimiter}
+("entity"{tuple_delimiter}长春市, 中国{tuple_delimiter}location{tuple_delimiter}长春市位于中国，是客户EG614的所在地。)
+{record_delimiter}
+("entity"{tuple_delimiter}盟新科技有限公司生物科技{tuple_delimiter}company{tuple_delimiter}盟新科技有限公司生物科技是一家生物科技领域的公司，客户OO987所属企业。)
+{record_delimiter}
+("entity"{tuple_delimiter}OO987{tuple_delimiter}customer{tuple_delimiter}客户ID为OO987的用户，隶属于盟新科技有限公司生物科技，位于莹县, 中国，购买并评价西门子 智能灯具 Mini。)
+{record_delimiter}
+("entity"{tuple_delimiter}莹县, 中国{tuple_delimiter}location{tuple_delimiter}莹县位于中国，是客户OO987的所在地。)
+{record_delimiter}
+("entity"{tuple_delimiter}PI956{tuple_delimiter}customer{tuple_delimiter}客户ID为PI956的用户，隶属于华远软件网络有限公司云计算，位于琳市, 中国，购买并评价西门子 智能灯具 Mini。)
+{record_delimiter}
+("entity"{tuple_delimiter}华远软件网络有限公司云计算{tuple_delimiter}company{tuple_delimiter}华远软件网络有限公司云计算是一家云计算领域的软件网络公司，客户PI956所属企业。)
+{record_delimiter}
+("entity"{tuple_delimiter}琳市, 中国{tuple_delimiter}location{tuple_delimiter}琳市位于中国，是客户PI956的所在地。)
+{record_delimiter}
+("entity"{tuple_delimiter}OG278{tuple_delimiter}customer{tuple_delimiter}客户ID为OG278的用户，隶属于新格林耐特传媒有限公司科技公司，位于永安县, 中国，购买并评价西门子 智能灯具 Mini。)
+{record_delimiter}
+("entity"{tuple_delimiter}新格林耐特传媒有限公司科技公司{tuple_delimiter}company{tuple_delimiter}新格林耐特传媒有限公司科技公司是一家科技传媒公司，客户OG278所属企业。)
+{record_delimiter}
+("entity"{tuple_delimiter}永安县, 中国{tuple_delimiter}location{tuple_delimiter}永安县位于中国，是客户OG278的所在地。)
+{record_delimiter}
+("entity"{tuple_delimiter}HC021{tuple_delimiter}customer{tuple_delimiter}客户ID为HC021的用户，隶属于易动力科技有限公司生物科技，位于芳县, 中国，购买并评价飞利浦 智能灯具 Standard。)
+{record_delimiter}
+("entity"{tuple_delimiter}易动力科技有限公司生物科技{tuple_delimiter}company{tuple_delimiter}易动力科技有限公司生物科技是一家生物科技领域的公司，客户HC021所属企业。)
+{record_delimiter}
+("entity"{tuple_delimiter}芳县, 中国{tuple_delimiter}location{tuple_delimiter}芳县位于中国，是客户HC021的所在地。)
+{record_delimiter}
+("entity"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}product{tuple_delimiter}飞利浦 智能灯具 Standard是一款智能灯具产品，价格为2663.62元，获得客户HC021评价。)
+{record_delimiter}
+("entity"{tuple_delimiter}飞利浦智能照明{tuple_delimiter}manufacturer{tuple_delimiter}飞利浦智能照明是飞利浦 智能灯具 Standard的生产商，专注于智能照明产品。)
+{record_delimiter}
+("entity"{tuple_delimiter}稳定性{tuple_delimiter}feature{tuple_delimiter}稳定性是飞利浦 智能灯具 Standard被用户HC021提及的产品特性，反馈表现较差。)
+{record_delimiter}
+("entity"{tuple_delimiter}2025年09月30日{tuple_delimiter}date{tuple_delimiter}2025年09月30日为客户SK026对西门子 智能灯具 Mini的评价日期。)
+{record_delimiter}
+("entity"{tuple_delimiter}1.6星{tuple_delimiter}rating{tuple_delimiter}客户SK026于2025年09月30日对西门子 智能灯具 Mini的评分为1.6星。)
+{record_delimiter}
+("entity"{tuple_delimiter}2025年03月24日{tuple_delimiter}date{tuple_delimiter}2025年03月24日为客户SK026对西门子 智能灯具 Mini的评价日期。)
+{record_delimiter}
+("entity"{tuple_delimiter}1.8星{tuple_delimiter}rating{tuple_delimiter}客户SK026于2025年03月24日对西门子 智能灯具 Mini的评分为1.8星。)
+{record_delimiter}
+("entity"{tuple_delimiter}2025年02月25日{tuple_delimiter}date{tuple_delimiter}2025年02月25日为客户OO987对西门子 智能灯具 Mini的评价日期。)
+{record_delimiter}
+("entity"{tuple_delimiter}3.5星{tuple_delimiter}rating{tuple_delimiter}客户OO987于2025年02月25日对西门子 智能灯具 Mini的评分为3.5星。)
+{record_delimiter}
+("entity"{tuple_delimiter}2024年10月24日{tuple_delimiter}date{tuple_delimiter}2024年10月24日为客户PI956对西门子 智能灯具 Mini的评价日期。)
+{record_delimiter}
+("entity"{tuple_delimiter}2.8星{tuple_delimiter}rating{tuple_delimiter}客户PI956于2024年10月24日对西门子 智能灯具 Mini的评分为2.8星。)
+{record_delimiter}
+("entity"{tuple_delimiter}2024年08月03日{tuple_delimiter}date{tuple_delimiter}2024年08月03日为客户HC021对飞利浦 智能灯具 Standard的评价日期。)
+{record_delimiter}
+("entity"{tuple_delimiter}2.5星{tuple_delimiter}rating{tuple_delimiter}客户HC021于2024年08月03日对飞利浦 智能灯具 Standard的评分为2.5星。)
+{record_delimiter}
+("entity"{tuple_delimiter}2024年07月11日{tuple_delimiter}date{tuple_delimiter}2024年07月11日为客户EG614对西门子 智能灯具 Mini的评价日期。)
+{record_delimiter}
+("entity"{tuple_delimiter}4.8星{tuple_delimiter}rating{tuple_delimiter}客户EG614于2024年07月11日对西门子 智能灯具 Mini的评分为4.8星。)
+{record_delimiter}
+("entity"{tuple_delimiter}2024年02月13日{tuple_delimiter}date{tuple_delimiter}2024年02月13日为客户OG278对西门子 智能灯具 Mini的评价日期。)
+{record_delimiter}
+("entity"{tuple_delimiter}2.6星{tuple_delimiter}rating{tuple_delimiter}客户OG278于2024年02月13日对西门子 智能灯具 Mini的评分为2.6星。)
+{record_delimiter}
+("entity"{tuple_delimiter}5984.03{tuple_delimiter}price{tuple_delimiter}西门子 智能灯具 Mini的价格为5984.03元。)
+{record_delimiter}
+("entity"{tuple_delimiter}2663.62{tuple_delimiter}price{tuple_delimiter}飞利浦 智能灯具 Standard的价格为2663.62元。)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}巨奥科技有限公司虚拟现实{tuple_delimiter}SK026是巨奥科技有限公司虚拟现实的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}海门县, 中国{tuple_delimiter}SK026位于海门县, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}SK026多次购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}西门子智能家居{tuple_delimiter}西门子智能家居是西门子 智能灯具 Mini的生产商{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}智能灯具{tuple_delimiter}西门子 智能灯具 Mini属于智能灯具产品类别{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}电池寿命{tuple_delimiter}电池寿命是西门子 智能灯具 Mini的重要产品特性{tuple_delimiter}8)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}故障{tuple_delimiter}部分用户反馈西门子 智能灯具 Mini存在故障问题{tuple_delimiter}7)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}定时功能{tuple_delimiter}定时功能是西门子 智能灯具 Mini的亮点功能{tuple_delimiter}6)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}散热问题{tuple_delimiter}部分用户反馈西门子 智能灯具 Mini存在散热问题{tuple_delimiter}6)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}信号强度{tuple_delimiter}信号强度是用户对西门子 智能灯具 Mini提出的产品特性{tuple_delimiter}6)
+{record_delimiter}
+("relationship"{tuple_delimiter}EG614{tuple_delimiter}联软信息有限公司物联网{tuple_delimiter}EG614是联软信息有限公司物联网的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}EG614{tuple_delimiter}长春市, 中国{tuple_delimiter}EG614位于长春市, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}EG614{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}EG614购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OO987{tuple_delimiter}盟新科技有限公司生物科技{tuple_delimiter}OO987是盟新科技有限公司生物科技的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OO987{tuple_delimiter}莹县, 中国{tuple_delimiter}OO987位于莹县, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OO987{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}OO987购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}PI956{tuple_delimiter}华远软件网络有限公司云计算{tuple_delimiter}PI956是华远软件网络有限公司云计算的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}PI956{tuple_delimiter}琳市, 中国{tuple_delimiter}PI956位于琳市, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}PI956{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}PI956购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OG278{tuple_delimiter}新格林耐特传媒有限公司科技公司{tuple_delimiter}OG278是新格林耐特传媒有限公司科技公司的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OG278{tuple_delimiter}永安县, 中国{tuple_delimiter}OG278位于永安县, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OG278{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}OG278购买并评价西门子 智能灯具 Mini{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}HC021{tuple_delimiter}易动力科技有限公司生物科技{tuple_delimiter}HC021是易动力科技有限公司生物科技的客户{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}HC021{tuple_delimiter}芳县, 中国{tuple_delimiter}HC021位于芳县, 中国{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}HC021{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}HC021购买并评价飞利浦 智能灯具 Standard{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}飞利浦智能照明{tuple_delimiter}飞利浦智能照明是飞利浦 智能灯具 Standard的生产商{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}智能灯具{tuple_delimiter}飞利浦 智能灯具 Standard属于智能灯具产品类别{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}稳定性{tuple_delimiter}稳定性是飞利浦 智能灯具 Standard的重要产品特性{tuple_delimiter}7)
+{record_delimiter}
+("relationship"{tuple_delimiter}西门子 智能灯具 Mini{tuple_delimiter}5984.03{tuple_delimiter}西门子 智能灯具 Mini的价格为5984.03元{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}飞利浦 智能灯具 Standard{tuple_delimiter}2663.62{tuple_delimiter}飞利浦 智能灯具 Standard的价格为2663.62元{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}1.6星{tuple_delimiter}SK026于2025年09月30日对西门子 智能灯具 Mini的评分为1.6星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}SK026{tuple_delimiter}1.8星{tuple_delimiter}SK026于2025年03月24日对西门子 智能灯具 Mini的评分为1.8星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OO987{tuple_delimiter}3.5星{tuple_delimiter}OO987于2025年02月25日对西门子 智能灯具 Mini的评分为3.5星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}PI956{tuple_delimiter}2.8星{tuple_delimiter}PI956于2024年10月24日对西门子 智能灯具 Mini的评分为2.8星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}HC021{tuple_delimiter}2.5星{tuple_delimiter}HC021于2024年08月03日对飞利浦 智能灯具 Standard的评分为2.5星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}EG614{tuple_delimiter}4.8星{tuple_delimiter}EG614于2024年07月11日对西门子 智能灯具 Mini的评分为4.8星{tuple_delimiter}10)
+{record_delimiter}
+("relationship"{tuple_delimiter}OG278{tuple_delimiter}2.6星{tuple_delimiter}OG278于2024年02月13日对西门子 智能灯具 Mini的评分为2.6星{tuple_delimiter}10)
+{completion_delimiter}
+#############################
+
+
+
+-Real Data-
+######################
+entity_types: [customer, company, location, product, manufacturer, product category, feature, review, rating, price, date]
+text: {input_text}
+######################
+output:

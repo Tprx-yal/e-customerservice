@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户服务系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="login-section" class="section">
+            <h2>登录</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">用户名:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">登录</button>
+            </form>
+            <div id="login-message"></div>
+        </div>
+
+        <div id="main-section" class="section hidden">
+            <h2>查询界面</h2>
+            <p><a href="http://127.0.0.1:8000/docs" target="_blank">查看API文档 (Swagger UI)</a></p>
+            <form id="query-form">
+                <div class="form-group">
+                    <label for="query">查询内容:</label>
+                    <textarea id="query" name="query" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="image">上传图片 (可选):</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+                <button type="submit">提交查询</button>
+            </form>
+            <div id="response"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

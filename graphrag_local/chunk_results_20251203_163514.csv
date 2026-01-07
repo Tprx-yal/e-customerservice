@@ -1,0 +1,75 @@
+doc_idx,chunk_idx,n_tokens,text_chunk
+0,1,13,"METADATA:
+{
+  ""parent_headings"": [
+    ""# Deepseek企业级Agent项目开发实战""
+  ]
+}
+
+CONTENT:
+# Deepseek企业级Agent项目开发实战"
+0,2,481,"METADATA:
+{
+  ""type"": ""image"",
+  ""page"": 0,
+  ""element_idx"": 0,
+  ""path"": ""images/7c33c963d0ecabe23f716bcdce4a1f456a373967bc1bc780474f5c71ccc66816.jpg"",
+  ""description"": ""这张图片展示了一个包含六个步骤的流程图，概述了Microsoft GraphRAG的工作流程和查询阶段。图片被分成两部分，左侧展示了具体的处理步骤，右侧展示了查询阶段的步骤。\n\n左侧部分详细描述了从文档处理到网络可视化的过程：\n1. **Documents into Text Chunks**：\n   - 两个文档（Document 1和Document 2）被分割成多个文本单元（TextUnit 1到TextUnit 4）。\n   - 文档 1 包含 TextUnit 1 和 TextUnit 2，文档 2 包含 TextUnit 3 和 TextUnit 4。\n\n2. **Graph Extraction**：\n   - 每个文本单元（TextUnit）通过图提取（Graph Extraction）和声明提取（Claim Extraction）过程进行处理。\n   - 然后进行图总结（Graph Summarization）。\n\n3. **Graph Augmentation**：\n   - 使用Leiden Hierarchical Community Detection进行社区检测。\n   - 使用Node2Vec进行图嵌入（Graph Embedding）。\n   - 最后生成图表输出（Graph Table Emission）。\n\n4. **Community Summarization**：\n   - 生成社区报告（Generate Community Reports）。\n   - 汇总社区报告（Summarize Community Reports）。\n   - 进行社区嵌入（Community Embedding）。\n"",
+  ""parent_headings"": [
+    ""# Part 4. Microsoft GraphRAG Query构建流程详解""
+  ]
+}
+
+CONTENT:
+在完成了Microsoft GraphRAG的索引构建及自定义接入图数据库Neo4j构建完整的知识图谱后，我们在上一小节课程中已经初步实践了可以通过Cypher语句来查询结构化数据中的信息。当然，传统的Cypher 查询方式，需要我们具备一定的图数据库知识，对非技术人员来说，使用门槛较高。 而Microsoft GraphRAG 则提供了一种更为直观、易用的查询方式，我们只需要输入自然语言查询，即可获得结构化的查询结果。
+
+这就需要我们了解Microsoft GraphRAG使用的第二阶段，即查询（Query）阶段。
+
+索引阶段我们利用大语言模型结合提示工程，从非结构化文本（.txt、.csv）中提取出实体（Entities）与关系（Relationships），构建出了基础的 Knowledge Graph ，并且通过建立层次化的community 结构， community 以及 community_report 的丰富语义，相较于传统基于 Cypher 的查询方式可以提供更多灵活性的 Query 操作， Microsoft GraphRAG 在项目开源之初是提供了 local 和global 两种查询方式，分别对应了 local search 和 global search ，而后在不断的迭代更新过程中，除了优化了 local search 和 global search 的效果，还新增了 DRIFT Search 和 Multi IndexSearch 作为扩展优化的可选项，以进一步丰富 Query 操作的多样性。
+
+如下图所以，原图来源于 Microsoft GraphRAG 的官方论文：https://arxiv.org/pdf/2404.16130
+
+Microsoft GraphRAG 在查询阶段构建的流程，相较于构建索引阶段会更为直观，核心的具体步骤"
+0,3,370,"METADATA:
+{
+  ""parent_headings"": [
+    ""# 包括：""
+  ]
+}
+
+CONTENT:
+1. 接收用户的查询请求。
+
+2. 根据查询所需的详细程度，选择合适的社区级别进行分析。
+
+3. 在选定的社区级别进行信息检索。
+
+4. 依据社区摘要生成初步的响应。
+
+5. 将多个相关社区的初步响应进行整合，形成一个全面的最终答案。
+
+通过学习Microsoft GraphRAG索引构建的源码大家应该已经能够清晰的知道，Indexing 过程中并不是在创建完第一层社区后就停止了，而是是分层的。也就是说，当创建第一层社区（即基础社区）后，会将这些社区视为节点，进一步构建更高层级的社区。这种方法就实现在知识图谱中可以以不同的粒度级别上组织和表示数据。比如第一层社区可以包含具体的实体或数据，而更高层级的社区则可以聚合这些基础社区，形成更广泛的概览。
+
+因此最核心的 Local Search 和 Global Search 的实现，就是源于不同的粒度级别而构建出来用于处理不同类型问题的 Pipeline , 其中：
+
+Local Search 是基于实体的检索。  
+Global Search 则是基于社区的检索。"
+0,4,124,"METADATA:
+{
+  ""type"": ""table"",
+  ""page"": 1,
+  ""element_idx"": 0,
+  ""description"": ""该表格列出了11个命令行参数，包括参数名称、类型、描述、默认值和是否必需。其中，`--method` 和 `--query` 是必需参数，其余为可选。参数主要用于配置查询算法、输入数据路径、社区层级、响应格式和帮助信息等。"",
+  ""parent_headings"": [
+    ""# graphrag query 命令参数说明""
+  ]
+}
+
+CONTENT:
+其中，在执行查询时必须指定的参数是 --method 和 --query ，其他参数为可选参数。其中：
+
+. --method 参数可以选择 local 、 global 、 drift 或 basic 算法。(接下来我们会依次介绍这几种算法)
+
+--query 参数是要执行的查询，即提出的问题。
+
+了解到这里，就可以通过命令行快速启动问答检索了。这里我们先来看 local 本地搜索。输入如下命令"

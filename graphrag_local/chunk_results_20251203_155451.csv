@@ -1,0 +1,8 @@
+doc_idx,chunk_idx,n_tokens,text_chunk
+0,1,23,"METADATA:
+{
+  ""parent_headings"": []
+}
+
+CONTENT:
+[处理错误] test.pdf: cannot access local variable 'auto_dir' where it is not associated with a value"
